@@ -34,3 +34,4 @@
 # Libraries
 libs/
 external/
+build/

@@ -64,8 +64,7 @@ int main(int argc, char* argv[])
     
     // Set callback handlers
     client->SetFrameReceivedCallback(DataHandler, client);
-    client->SetMessageCallback(MessageHandler);
-    
+    NatNet_SetLogCallback(MessageHandler);
     // Connect to Motive (lab IP)
     std::string serverIP = "127.0.0.1";
     std::string localIP = "127.0.0.1";  

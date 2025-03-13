@@ -5,7 +5,7 @@ project(GestureDetectionController VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(NATNET_SDK_DIR "C:/NatNetSDK") # Setup on Motive Lab PC
+set(NATNET_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/NatNetSDK") # Setup on Motive Lab PC
 set(NATNET_INCLUDE_DIR "${NATNET_SDK_DIR}/include")
 set(NATNET_LIB_DIR "${NATNET_SDK_DIR}/lib/x64")
 
@@ -25,9 +25,9 @@ if(WIN32)
     
     # Copy DLL to output directory
     add_custom_command(TARGET GestureDetectionController POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${NATNET_LIB_DIR}/NatNetLib.dll"
-        $<TARGET_FILE_DIR:GestureDetectionController>
+     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${NATNET_LIB_DIR}/NatNetLib.dll"
+       $<TARGET_FILE_DIR:GestureDetectionController>
     )
 endif()
 
