@@ -32,5 +32,5 @@
 *.app
 
 # Libraries
-./libs
-./libs/*
+libs/
+external/
