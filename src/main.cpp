@@ -36,6 +36,20 @@ void NATNET_CALLCONV DataHandler(sFrameOfMocapData* data, void* pUserData)
                       << rb.x << ", " << rb.y << ", " << rb.z << "]" << std::endl;    
         }
     }
+
+    // Print rigid bodies
+    for (int i = 0; i < data->nRigidBodies; i++) {
+        sRigidBodyData& rb = data->RigidBodies[i];
+        std::cout << "Rigid Body " << i << ": Position [" 
+                  << rb.x << ", " << rb.y << ", " << rb.z << "]" << std::endl;
+    }
+
+    // Print markers
+    for (int i = 0; i < data->nOtherMarkers; i++) {
+        float* marker = data->OtherMarkers[i];
+        std::cout << "Marker " << i << ": Position [" 
+                  << marker[0] << ", " << marker[1] << ", " << marker[2] << "]" << std::endl;
+    }
 }
 
 // Function to handle messages from the NatNet client
@@ -108,7 +122,11 @@ int main(int argc, char* argv[])
             // Sleep to avoid high CPU usage
             sFrameOfMocapData* data = client->GetLastFrameOfData();
 
-            std::cout <<"ALGO: " << data->CameraDataReceivedTimestamp;
+            if (data == nullptr) {
+            std::cout << "No data received this frame" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            continue;
+        }
 
     // Process skeleton data
     for (int i = 0; i < data->nSkeletons; i++)
@@ -125,7 +143,7 @@ int main(int argc, char* argv[])
         }
     }
             // DataHandler(data, client);
-            std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     }
     catch (std::exception& e)
