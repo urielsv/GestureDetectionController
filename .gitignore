@@ -35,3 +35,7 @@
 libs/
 external/
 build/
+
+# Editors
+.vscode/
+.vs
