@@ -32,9 +32,8 @@
 *.app
 
 # Libraries
-libs/
-external/
 build/
+external/
 
 # Editors
 .vscode/
