@@ -34,6 +34,8 @@
 # Libraries
 build/
 external/
+phyton/natnet_sdk
+phyton/__pycache__
 
 # Editors
 .vscode/

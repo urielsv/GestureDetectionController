@@ -1,35 +1,42 @@
-cmake_minimum_required(VERSION 3.10)
-project(GestureDetectionController VERSION 0.1.0)
+#cmake -S . -B build -A x64 -DNATNET_SDK_DIR="c:\Users\itba\Documents\NatNetSDK"
+#cmake --build build --config Release
+cmake_minimum_required(VERSION 3.16)
+project(NatNetCapture CXX)
 
-# Specify C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(NATNET_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/NatNetSDK3") # Setup on Motive Lab PC
-set(NATNET_INCLUDE_DIR "${NATNET_SDK_DIR}/include")
-set(NATNET_LIB_DIR "${NATNET_SDK_DIR}/lib/x64")
-
-# Include directories
-include_directories(${NATNET_INCLUDE_DIR})
-include_directories(include)
-
-# Add executable
-add_executable(GestureDetectionController src/main.cpp)
-
-# Link with NatNet libraries
-if(WIN32)
-    target_link_libraries(GestureDetectionController
-        ${NATNET_LIB_DIR}/NatNetLib.lib
-        ws2_32.lib # Windows socket library
-    )
-    
-    # Copy DLL to output directory
-    add_custom_command(TARGET GestureDetectionController POST_BUILD
-     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${NATNET_LIB_DIR}/NatNetLib.dll"
-       $<TARGET_FILE_DIR:GestureDetectionController>
-    )
+# ---- Configurá la ruta al NatNet SDK (pasala por -DNATNET_SDK_DIR=...) ----
+if(NOT DEFINED NATNET_SDK_DIR)
+    message(FATAL_ERROR "Debes definir NATNET_SDK_DIR (ruta a la carpeta del NatNet SDK).")
 endif()
 
-# Install
-install(TARGETS GestureDetectionController DESTINATION bin)
+# Headers y libs del SDK
+set(NATNET_INCLUDE_DIR "${NATNET_SDK_DIR}/include")
+# Elegimos 64-bit
+set(NATNET_LIB_DIR     "${NATNET_SDK_DIR}/lib/x64")
+
+# Ejecutable
+add_executable(NatNetCapture
+    src/cpp/main.cpp
+)
+
+target_include_directories(NatNetCapture PRIVATE "${NATNET_INCLUDE_DIR}")
+target_link_directories(NatNetCapture PRIVATE "${NATNET_LIB_DIR}")
+
+# NatNetLib + dependencias WinSock/IP Helper
+if(WIN32)
+    target_link_libraries(NatNetCapture PRIVATE NatNetLib Ws2_32 Iphlpapi)
+else()
+    # En Linux/Mac, si usás el C API, podés necesitar -lpthread, etc.
+    target_link_libraries(NatNetCapture PRIVATE NatNetLib pthread)
+endif()
+
+
+# Copiar la DLL al lado del .exe (solo Windows)
+if(WIN32)
+    add_custom_command(TARGET NatNetCapture POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${NATNET_LIB_DIR}/NatNetLib.dll"
+                $<TARGET_FILE_DIR:NatNetCapture>)
+endif()
